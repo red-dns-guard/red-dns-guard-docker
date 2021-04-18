@@ -8,9 +8,10 @@ if [ ! -z ${SYSLOG_HOST+x} ]; then
 EOF
 fi
 cat /etc/rsyslog.conf
+/usr/bin/coredns &
 rsyslogd 
 
-cd /etc/powerdns ;while(true);do (while(true);do sleep 3600;done)|dnsdist --local=0.0.0.0:53   -k "$DNSDISTKEY"  -C /etc/powerdns/dnsdist.lua;sleep 0.2;done &
+cd /etc/powerdns ;while(true);do  ( sleep 10; while(true);do echo 'showRules()';echo 'showServers()';sleep 360 ;done)|dnsdist --local=0.0.0.0:53   -k "$DNSDISTKEY"  -C /etc/powerdns/dnsdist.lua;sleep 0.2;done &
 bash /blocklistgen
 sleep 3 ;bash /WHITE-dnsdist.sh
 
