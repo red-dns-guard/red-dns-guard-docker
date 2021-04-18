@@ -1,6 +1,10 @@
 # red-dns-guard-docker
 
 
+corefile main resolver example with nextdns 
+
+```
+
 .:5301 {
     bind 127.0.0.1
     bind 10.1.1.1
@@ -33,3 +37,4 @@
     cache 360
 }   
 
+```
