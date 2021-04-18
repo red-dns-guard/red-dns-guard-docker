@@ -1,0 +1,94 @@
+mkdir -p /dev/shm/blocklists/;
+cd /dev/shm/blocklists/;
+redislists=""
+find /dev/shm/blocklists -mtime +3 -delete
+for list in $(cat /etc/powerdns/adlistindex.list|grep ^http ) ;do
+    listuuid=$(echo "$list"|base64 -w 0|tr -cd 'A-Za-z0-9');
+    listsum=$(echo "$listuuid"|sed 's/ -//g;s/\t-//g')
+    echo gettin "${list}" to $listuuid ;
+    wget -c --timeout=10 -A "Firefox Mozilla 66.6"  "$list" -O "${listuuid}".raw &
+    redislists="$redislists"'||| SET "'$listuuid'" "'$list'"' ;
+done ;
+sleep 2 ;
+jobs;
+sleep 2;
+wait  ;
+
+echo $redislists
+#echo -n 'return {' > /dev/shm/blacklist.lua; 
+echo updating redis  lists entries;
+echo "$redislists"|sed 's/|||/\n/g'|redis-cli --pipe
+## todo : rectify adblock lists;
+
+echo inserting dummy list
+time (grep -v -e ^127.0.0.1 -e ^::1 -e ^ff02:: -e ^fe80:: -e ^0.0.0.0 /dev/shm/blocklists/aHR0cHM6Ly*.raw |grep -h -v -e '^!' -e '^\t' -e '^ ' -e '^#' -e ^http  |sed 's/^\(127.0.0.1\|0.0.0.0\)\( \|\t\)//g' |grep '^[a-z0-9\.\-]*$'| awk '!x[$0]++' | sed 's/.\+/SET "\0." "blocked"/g' |pv --rate --average-rate --bytes --rate-limit 3000024 |redis-cli --pipe )
+
+echo updating redis block entries ;
+
+##dbsize=$(echo dbsize|redis-cli |cut -d" " -f2)
+##[[ -z $dbsize ]] && dbsize=1;
+##[[ 0 -eq $dbsize ]] && dbsize=1;
+
+
+listcount=$(ls -1 /dev/shm/blocklists/aHR0cHM6Ly*.raw|wc -l)
+[[ -z $listcount ]] && listcount=1;
+[[ 0 -eq $listcount ]] && listcount=1;
+
+listnum=0
+for list in /dev/shm/blocklists/aHR0cHM6Ly*.raw ;do
+  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*1)) ]] && sleep 0.1
+  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*2)) ]] && sleep 0.3
+  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*3)) ]] && sleep 0.5
+  let listnum+=1;
+  listsum=$(echo $(basename ${list//.raw/}) |md5sum |sed 's/ -//g;s/\t-//g;s/ //g')
+  listsize=$(cat $list|wc -l)
+  [[ -z $listsize ]] && listsize=1;
+  [[ 0 -eq $listsize ]] && listsize=1;
+  count=0
+  grep -h -v -e '^!' -e '^\t' -e '^ ' -e '^#' "$list" | grep -v -e ^127.0.0.1 -e ^::1 -e ^ff02:: -e ^fe80:: -e ^0.0.0.0  | awk '!x[$0]++' |sed 's/^\(127.0.0.1\|0.0.0.0\)\( \|\t\)//g;s/.\+/"\0."/g' |grep '^"[a-z0-9\.\-]*"' | while read blockhost;do
+    [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*1)) ]] && sleep 0.05
+    [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*2)) ]] && sleep 0.1
+    let count+=1;
+    [[ 0 -eq $(($count%10)) ]] && echo -ne  '\r                            \r'"jobs: $(jobs|wc -l) list: $listnum"'  \t'" of $listcount"' \t'" | count: "$count" of $listsize progress: "$(($count*100/$listsize))" percent  "'\t'  >&2
+    #hostsum=$(echo "$blockhost"|sed 's/ -//g;s/\t-//g')
+    #echo -en '\r'${blockhost}  >&2 
+
+    #echo 'SET "'${listsum}'" "'${hostsum}'.BLOCK"'
+    echo ;echo 'APPEND '${blockhost}' ":'${listsum}'"'
+    #sed 's/\.\+$/./g;s/^/SET /g;s/$/ "'${hostsum}'"/g';
+    done &
+   done |pv  --rate --average-rate --bytes --rate-limit 3000024 |redis-cli --pipe 
+
+
+
+####count=0
+####cat /dev/shm/blocklists/aHR0cHM6Ly*.raw |grep -h -v -e '^!' -e '^\t' -e '^ ' -e '^#' -e ^http  |sed 's/^\(127.0.0.1\|0.0.0.0\)\( \|\t\)//g' |grep '^[a-z0-9\.\-]*$'| awk '!x[$0]++' | while read blockhost;do
+####echo -ne  '\r'"count: "$count" of $dbsize progress:"$(($count/$dbsize*100))" percent "  >&2
+####[[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*2)) ]] && sleep 0.5
+####
+####let count+=1;
+####(
+####blockedby=$(grep -l ^${blockhost//\"/}$ /dev/shm/blocklists/aHR0cHM6Ly*.raw|sed 's/.dev.shm.blocklists..//g;s/\.raw$//' |while read a;do echo $a|md5sum|sed 's/ -//g;s/\t-//g;s/ //g';done|sed 's/$/:/g'|tr -d '\n'|sed 's/:$//g')
+####
+#####echo -en '\r'${blockhost}'\r'  >&2 
+####echo 'SET "'${blockhost}'." "'$blockedby'"' )  &  sleep 0.001
+#### [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*2)) ]] && sleep 0.5
+####done     |pv --rate --rate-limit 3000024 |redis-cli --pipe
+
+########for list in /dev/shm/blocklists/aHR0cHM6Ly*.raw ;do
+########  listsum=$(echo $(basename ${list//.raw/}) |md5sum |sed 's/ -//g;s/\t-//g;s/ //g')
+########  grep -h -v -e '^!' -e '^\t' -e '^ ' -e '^#' "$list" | awk '!x[$0]++' |sed 's/^\(127.0.0.1\|0.0.0.0\)\( \|\t\)//g;s/.\+/"\0."/g' |grep '^"[a-z0-9\.\-]*"' | while read blockhost;do
+########	hostsum=$(echo "$blockhost"|sed 's/ -//g;s/\t-//g')
+########    #echo -en '\r'${blockhost}  >&2 
+########    echo 'SET "'${listsum}'" "'${hostsum}'.BLOCK"'
+########    #echo 'SET '${blockhost}' "'${hostsum}.BLOCK'"'
+########    #sed 's/\.\+$/./g;s/^/SET /g;s/$/ "'${hostsum}'"/g';
+########    done
+########   done|pv --rate-limit 3000024 #|redis-cli --pipe
+#|grep -v ^OK$
+# |tr -d '\n'|pv  | 
+#>> /dev/shm/blacklist.lua ;
+#sed 's/,$//g' -i /dev/shm/blacklist.lua;
+#echo '}' >> /dev/shm/blacklist.lua
+
+echo 

@@ -1,0 +1,67 @@
+
+##https://.:50443 tls://.:853 tls://.:953 {
+#tls://.:853 tls://.:953 {
+#tls /etc/letsencrypt/live/your-domain.lan/fullchain.pem  /etc/letsencrypt/live/your-domain.lan/privkey.pem /etc/letsencrypt/live/your-domain.lan/chain.pem
+#bind 10.1.1.1
+#bind 0.0.0.0
+##forward . 1.1.1.1
+#proxy . 9.9.9.9:53 8.8.4.4:53
+#forward . 10.1.1.1 {
+#    prefer_udp
+#}
+
+#log
+#}
+
+.:534 {
+#    prometheus 10.1.1.1:9153
+    bind 10.1.1.1
+    bind 127.0.0.1
+    loadbalance round_robin
+    forward . 127.0.0.1:55301 127.0.0.1:55302
+    cache 360
+    #log
+
+}
+
+.:533 {
+#    prometheus 10.1.1.1:9153
+    bind 127.0.0.1
+    bind 10.1.1.1
+    hosts /etc/coredns/hosts/alternates/fakenews-gambling/hosts {
+      fallthrough
+    }
+    loadbalance round_robin
+    forward . 127.0.0.1:5301 127.0.0.1:5302 127.0.0.1:5303
+    cache 360
+    #log
+}
+
+.:5301 {
+    bind 127.0.0.1
+#    bind 10.1.1.1
+    forward . tls://5.9.164.112:853 {
+        tls_servername dns.digitale-gesellschaft.ch :
+
+    health_check 45s
+    }
+    cache 360
+}
+
+.:5302 {
+    bind 127.0.0.1
+    forward . tls://185.95.218.42:853 tls://[2a05:fc84::42]:853 tls://185.95.218.43:853  {
+        tls_servername dns.digitale-gesellschaft.ch
+    health_check 45s
+    }
+    cache 360
+}
+
+.:5303 {
+    bind 127.0.0.1
+    forward . tls://146.255.56.98:853 tls://[2a01:4f8:c0c:83ed::1]:443 {
+        tls_servername dot1.applied-privacy.net
+    health_check 45s
+    }
+    cache 360
+}

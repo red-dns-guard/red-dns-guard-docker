@@ -1,0 +1,1 @@
+curl -Ls https://gitlab.com/d4t4/black-and-whitelist/-/raw/master/whited-raw/{devops,vaults,remoteip}.host |while read a ;do domain=$a;echo "addAction({'"$domain"'}, PoolAction("'"bypass"'"))";done|dnsdist -c -C /etc/powerdns/dnsdist.conf
