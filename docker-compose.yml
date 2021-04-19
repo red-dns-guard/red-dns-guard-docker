@@ -38,10 +38,9 @@ services:
       dns:
         ipv4_address: 172.23.53.53
 networks:
-  wireguard:
-    dns:
-      config:
-        - subnet: 172.23.53.0/24
+   dns:
+    config:
+      - subnet: 172.23.53.0/24
 
   redis:
     networks:
