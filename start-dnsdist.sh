@@ -1,6 +1,6 @@
 #!/bin/bash
 # Check our environment out for a syslog server
-: ${REDIS_HOST:=redis}
+[[ -z "${REDIS_HOST}" ]] && REDIS_HOST=redis
 
 if [ ! -z ${SYSLOG_HOST+x} ]; then
     cat >> /etc/rsyslog.conf << EOF
