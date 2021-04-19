@@ -1,3 +1,6 @@
+REDIS_HOST=$1
+[[ -z "${REDIS_HOST}" ]] && REDIS_HOST=redis
+
 mkdir -p /dev/shm/blocklists/;
 cd /dev/shm/blocklists/;
 redislists=""
@@ -17,15 +20,15 @@ wait  ;
 echo $redislists
 #echo -n 'return {' > /dev/shm/blacklist.lua; 
 echo updating redis  lists entries;
-echo "$redislists"|sed 's/|||/\n/g'|redis-cli --pipe
+echo "$redislists"|sed 's/|||/\n/g'|redis-cli -h ${REDIS_HOST} --pipe
 ## todo : rectify adblock lists;
 
 echo inserting dummy list
-time (grep -v -e ^127.0.0.1 -e ^::1 -e ^ff02:: -e ^fe80:: -e ^0.0.0.0 /dev/shm/blocklists/aHR0cHM6Ly*.raw |grep -h -v -e '^!' -e '^\t' -e '^ ' -e '^#' -e ^http  |sed 's/^\(127.0.0.1\|0.0.0.0\)\( \|\t\)//g' |grep '^[a-z0-9\.\-]*$'| awk '!x[$0]++' | sed 's/.\+/SET "\0." "blocked"/g' |pv --rate --average-rate --bytes --rate-limit 3000024 |redis-cli --pipe )
+time (grep -v -e ^127.0.0.1 -e ^::1 -e ^ff02:: -e ^fe80:: -e ^0.0.0.0 /dev/shm/blocklists/aHR0cHM6Ly*.raw |grep -h -v -e '^!' -e '^\t' -e '^ ' -e '^#' -e ^http  |sed 's/^\(127.0.0.1\|0.0.0.0\)\( \|\t\)//g' |grep '^[a-z0-9\.\-]*$'| awk '!x[$0]++' | sed 's/.\+/SET "\0." "blocked"/g' |pv --rate --average-rate --bytes --rate-limit 3000024 |redis-cli  -h ${REDIS_HOST} --pipe )
 
 echo updating redis block entries ;
 
-##dbsize=$(echo dbsize|redis-cli |cut -d" " -f2)
+##dbsize=$(echo dbsize|redis-cli  -h ${REDIS_HOST} |cut -d" " -f2)
 ##[[ -z $dbsize ]] && dbsize=1;
 ##[[ 0 -eq $dbsize ]] && dbsize=1;
 
@@ -57,7 +60,7 @@ for list in /dev/shm/blocklists/aHR0cHM6Ly*.raw ;do
     echo ;echo 'APPEND '${blockhost}' ":'${listsum}'"'
     #sed 's/\.\+$/./g;s/^/SET /g;s/$/ "'${hostsum}'"/g';
     done &
-   done |pv  --rate --average-rate --bytes --rate-limit 3000024 |redis-cli --pipe 
+   done |pv  --rate --average-rate --bytes --rate-limit 3000024 |redis-cli  -h ${REDIS_HOST} --pipe 
 
 
 
@@ -73,7 +76,7 @@ for list in /dev/shm/blocklists/aHR0cHM6Ly*.raw ;do
 #####echo -en '\r'${blockhost}'\r'  >&2 
 ####echo 'SET "'${blockhost}'." "'$blockedby'"' )  &  sleep 0.001
 #### [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*2)) ]] && sleep 0.5
-####done     |pv --rate --rate-limit 3000024 |redis-cli --pipe
+####done     |pv --rate --rate-limit 3000024 |redis-cli   -h ${REDIS_HOST} --pipe
 
 ########for list in /dev/shm/blocklists/aHR0cHM6Ly*.raw ;do
 ########  listsum=$(echo $(basename ${list//.raw/}) |md5sum |sed 's/ -//g;s/\t-//g;s/ //g')
@@ -84,7 +87,7 @@ for list in /dev/shm/blocklists/aHR0cHM6Ly*.raw ;do
 ########    #echo 'SET '${blockhost}' "'${hostsum}.BLOCK'"'
 ########    #sed 's/\.\+$/./g;s/^/SET /g;s/$/ "'${hostsum}'"/g';
 ########    done
-########   done|pv --rate-limit 3000024 #|redis-cli --pipe
+########   done|pv --rate-limit 3000024 #|redis-cli  -h ${REDIS_HOST} --pipe
 #|grep -v ^OK$
 # |tr -d '\n'|pv  | 
 #>> /dev/shm/blacklist.lua ;
