@@ -2,6 +2,7 @@ version: '2.2'
 services:
   dns-robin:
 #    image: m400/robin
+    image: redisdnsguard/redis-dns-guard
     build:
       context: .
       dockerfile: Dockerfile-pdnsd
