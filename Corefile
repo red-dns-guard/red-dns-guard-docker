@@ -13,15 +13,44 @@
 #log
 #}
 
+
+### clean unfiltered backend
 .:534 {
 #    prometheus 10.1.1.1:9153
     bind 10.1.1.1
     bind 127.0.0.1
     loadbalance round_robin
-    forward . 127.0.0.1:55301 127.0.0.1:55302
+    forward . 127.0.0.1:5301 127.0.0.1:5302 127.0.0.1:5303
     cache 360
     #log
 
+}
+
+## nextdns (defaulting to clean upstreams)
+.:531 {
+#    prometheus 10.1.1.1:9153
+    bind 127.0.0.1
+    bind 10.1.1.1
+    hosts /etc/coredns/hosts/alternates/fakenews-gambling/hosts {
+      fallthrough
+    }
+    loadbalance round_robin
+    forward . 127.0.0.1:5301 127.0.0.1:5302 127.0.0.1:5303
+    cache 360
+    #log
+}
+
+.:532 {
+#    prometheus 10.1.1.1:9153
+    bind 127.0.0.1
+    bind 10.1.1.1
+    hosts /etc/coredns/hosts/alternates/fakenews-gambling/hosts {
+      fallthrough
+    }
+    loadbalance round_robin
+    forward . 127.0.0.1:5301 127.0.0.1:5302 127.0.0.1:5303
+    cache 360
+    #log
 }
 
 .:533 {
@@ -37,6 +66,7 @@
     #log
 }
 
+#### fallback/bypass group
 .:5301 {
     bind 127.0.0.1
 #    bind 10.1.1.1
