@@ -24,8 +24,9 @@ RUN mkdir -p /var/run/pdns-recursor
 # Copy over config files
 COPY blocklistgen /
 COPY files-pdns/recursor.conf adlistindex.list /etc/powerdns/
+COPY files-pdns/dnsdist.conf /etc/powerdns/
 COPY files-pdns/rsyslog.conf /etc/rsyslog.conf
-COPY files-pdns/lua/ /etc/powerdns/
+COPY files-pdns/lua/* /etc/powerdns/
 COPY Corefile /etc/coredns/Corefile
 
 #RUN mkdir /etc/powerdns/lua
