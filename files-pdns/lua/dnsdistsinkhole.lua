@@ -164,5 +164,5 @@ getredis(options["redis-servers"])
 
 ---require "syslog-dnsdist"
 ---makeKey()
-setKey("sWWalOkXJH4cNVwyLaJdomJFOrkmi4l1av7R1fNsg40=")
-newServer({address="10.1.1.1:533", qps=300})
+---setKey("sWWalOkXJH4cNVwyLaJdomJFOrkmi4l1av7R1fNsg40=")
+---newServer({address="10.1.1.1:533", qps=300})
