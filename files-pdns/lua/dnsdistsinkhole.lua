@@ -13,9 +13,9 @@ local returnLOCALHOST = false
 local returnCNAME = false
 ---local returnLOCALHOST = true
 ---local returnCNAME = true
-local logQUERIES =  true
+local logQUERIES =  false
 local logBLOCKED =  true
-local logNXDOMAIN = true
+local logNXDOMAIN = false
 
 
 local function isNaN( v )

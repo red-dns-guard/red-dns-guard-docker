@@ -77,8 +77,8 @@
 .:5301 {
     bind 127.0.0.1
 ##    bind 10.1.1.1
-    forward . tls://5.9.164.112:853 {
-        tls_servername dns.digitale-gesellschaft.ch 
+    forward . tls://91.239.100.100:853 tls://[2001:67c:28a4::]:853 {
+        tls_servername anycast.censurfridns.dk 
 
     health_check 45s
     }
@@ -87,7 +87,7 @@
 
 .:5302 {
     bind 127.0.0.1
-    forward . tls://185.95.218.42:853 tls://[2a05:fc84::42]:853 tls://185.95.218.43:853  {
+    forward . tls://185.95.218.42:853 tls://[2a05:fc84::42]:853 tls://185.95.218.43:853 tls://[2a05:fc84::43]:853 {
         tls_servername dns.digitale-gesellschaft.ch
     health_check 45s
     }
