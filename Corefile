@@ -17,7 +17,7 @@
 ### clean unfiltered backend
 .:534 {
 #    prometheus 10.1.1.1:9153
-    bind 10.1.1.1
+#    bind 10.1.1.1
     bind 127.0.0.1
     loadbalance round_robin
     forward . 127.0.0.1:5301 127.0.0.1:5302 127.0.0.1:5303
@@ -30,20 +30,12 @@
 .:531 {
 #    prometheus 10.1.1.1:9153
     bind 127.0.0.1
-    bind 10.1.1.1
+#    bind 10.1.1.1
     hosts /etc/coredns/hosts/alternates/fakenews-gambling/hosts {
       fallthrough
     }
     loadbalance round_robin
-
-## uncomment next line if using dot
     forward . 127.0.0.1:5301 127.0.0.1:5302 127.0.0.1:5303
-
-#### see your "Installation section of the dot provide"
-##    forward . tls://45.90.28.123:853 tls://[2a07:a8c0::ab:cdef]:853  tls://[2a07:a8c1::ab:cdef]:853   {
-##        tls_servername abcdef.dns.nextdns.io
-#    health_check 45s
-#    }
     cache 360
     #log
 }
@@ -51,21 +43,12 @@
 .:532 {
 #    prometheus 10.1.1.1:9153
     bind 127.0.0.1
-    bind 10.1.1.1
+#    bind 10.1.1.1
     hosts /etc/coredns/hosts/alternates/fakenews-gambling/hosts {
       fallthrough
     }
     loadbalance round_robin
-
-## uncomment next line if using dot
     forward . 127.0.0.1:5301 127.0.0.1:5302 127.0.0.1:5303
-
-#### see your "Installation section of the dot provide"
-##    forward . tls://45.90.28.123:853 tls://[2a07:a8c0::ab:cdef]:853  tls://[2a07:a8c1::ab:cdef]:853   {
-##        tls_servername abcdef.dns.nextdns.io
-#    health_check 45s
-#    }
-
     cache 360
     #log
 }
@@ -73,14 +56,11 @@
 .:533 {
 #    prometheus 10.1.1.1:9153
     bind 127.0.0.1
-    bind 10.1.1.1
+#    bind 10.1.1.1
     hosts /etc/coredns/hosts/alternates/fakenews-gambling/hosts {
       fallthrough
     }
     loadbalance round_robin
-
-
-## uncomment next line if using dot
     forward . 127.0.0.1:5301 127.0.0.1:5302 127.0.0.1:5303
 
 #### see your "Installation section of the dot provide"
@@ -96,9 +76,9 @@
 #### fallback/bypass group
 .:5301 {
     bind 127.0.0.1
-#    bind 10.1.1.1
+##    bind 10.1.1.1
     forward . tls://5.9.164.112:853 {
-        tls_servername dns.digitale-gesellschaft.ch :
+        tls_servername dns.digitale-gesellschaft.ch 
 
     health_check 45s
     }
@@ -117,7 +97,7 @@
 .:5303 {
     bind 127.0.0.1
     forward . tls://146.255.56.98:853 tls://[2a01:4f8:c0c:83ed::1]:443 {
-        tls_servername dot1.applied-privacy.net
+    tls_servername dot1.applied-privacy.net
     health_check 45s
     }
     cache 360
