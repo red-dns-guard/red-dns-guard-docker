@@ -31,7 +31,7 @@ echo "$redislists"|sed 's/|||/\n/g'|redis-cli -h ${REDIS_HOST} --pipe
 ## todo : rectify adblock lists;
 
 echo inserting dummy list
-time (grep -v -e ^127.0.0.1 -e ^::1 -e ^ff02:: -e ^fe80:: -e ^0.0.0.0 /dev/shm/blocklists/aHR0cHM6Ly*.raw |grep -h -v -e '^!' -e '^\t' -e '^ ' -e '^#' -e ^http  |sed 's/^\(127.0.0.1\|0.0.0.0\)\( \|\t\)//g' |grep '^[a-z0-9\.\-]*$'| awk '!x[$0]++' | sed 's/.\+/SET "\0." "blocked"/g' |pv --rate --average-rate --bytes --rate-limit 3000024 |redis-cli  -h ${REDIS_HOST} --pipe )
+time (grep -v -h -e ^127.0.0.1 -e ^::1 -e ^ff02:: -e ^fe80:: -e ^0.0.0.0 /dev/shm/blocklists/aHR0cHM6Ly*.raw |grep -h -v -e '^!' -e '^\t' -e '^ ' -e '^#' -e ^http  |sed 's/^\(127.0.0.1\|0.0.0.0\)\( \|\t\)//g' |grep '^[a-z0-9\.\-]*$'| awk '!x[$0]++' | sed 's/.\+/SET "\0." "blocked"/g' | grep -E "^[a-zA-Z0-9]+([-.]?[a-zA-Z0-9]+)*.[a-zA-Z]+$" |pv --rate --average-rate --bytes --rate-limit 3000024 |redis-cli  -h ${REDIS_HOST} --pipe )
 
 
 [[ $(sed 's/ \+/ /g' /proc/meminfo|grep ^MemFre|cut -d" " -f 2) -ge 32768 ]] || {  echo "not enough ram , needed 32768,got "$(sed 's/ \+/ /g' /proc/meminfo|grep ^MemFre|cut -d" " -f 2) ; } ;
