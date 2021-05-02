@@ -29,9 +29,9 @@ echo inserting dummy list
 time (grep -v -e ^127.0.0.1 -e ^::1 -e ^ff02:: -e ^fe80:: -e ^0.0.0.0 /dev/shm/blocklists/aHR0cHM6Ly*.raw |grep -h -v -e '^!' -e '^\t' -e '^ ' -e '^#' -e ^http  |sed 's/^\(127.0.0.1\|0.0.0.0\)\( \|\t\)//g' |grep '^[a-z0-9\.\-]*$'| awk '!x[$0]++' | sed 's/.\+/SET "\0." "blocked"/g' |pv --rate --average-rate --bytes --rate-limit 3000024 |redis-cli  -h ${REDIS_HOST} --pipe )
 
 
-[[ $(sed 's/ \+/ /g' /proc/meminfo|grep ^MemFre|cut -d" " -f 2) -ge 666666 ]] || {  echo "not enough ram , needed 666666,got "$(sed 's/ \+/ /g' /proc/meminfo|grep ^MemFre|cut -d" " -f 2) ; } ;
+[[ $(sed 's/ \+/ /g' /proc/meminfo|grep ^MemFre|cut -d" " -f 2) -ge 32768 ]] || {  echo "not enough ram , needed 32768,got "$(sed 's/ \+/ /g' /proc/meminfo|grep ^MemFre|cut -d" " -f 2) ; } ;
 
-[[ $(sed 's/ \+/ /g' /proc/meminfo|grep ^MemFre|cut -d" " -f 2) -ge 666666 ]] && {
+[[ $(sed 's/ \+/ /g' /proc/meminfo|grep ^MemFre|cut -d" " -f 2) -ge 32768 ]] && {
 echo updating redis block entries ;
 
 ##dbsize=$(echo dbsize|redis-cli  -h ${REDIS_HOST} |cut -d" " -f2)
