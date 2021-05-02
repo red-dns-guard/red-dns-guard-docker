@@ -38,15 +38,6 @@ services:
     networks:
       dns:
         ipv4_address: 172.23.53.53
-
-networks:
-   dns:
-    config:
-      - subnet: 172.23.53.0/24
-    external: true
-#    ipam:
-#      config:
-#        - subnet: 172.23.53.0/24
   redis:
     networks:
       dns:
@@ -59,3 +50,10 @@ networks:
 #    command:
 #      - redis-server --appendonly yes
 
+
+networks:
+  dns:
+    external: true
+#    ipam:
+#      config:
+#        - subnet: 172.23.53.0/24
