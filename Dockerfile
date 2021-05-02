@@ -2,10 +2,10 @@ FROM alpine
 #FROM ubuntu:20.04
 MAINTAINER profit <profit@ccmo.me>
 # Grab powerdns bits
-RUN apk add dnsdist-luajit || apk add dnsdist lua-redis lua-cjson
+RUN apk add dnsdist-luajit || apk add dnsdist lua-redis lua-cjson coreutils tor
 RUN apk add luajit lua5.1-redis  lua5.1-socket lua5.1-cjson lua-json4 bash rsyslog curl wget sed grep jq redis pv socat
-RUN /bin/bash -c " uname -m|grep x86_64 && wget -O- https://github.com/coredns/coredns/releases/download/v1.6.9/coredns_1.6.9_linux_amd64.tgz|tar xvz; chmod +x coredns ;mv coredns /usr/bin" || true
-RUN /bin/bash -c " uname -m|grep aarch64 && wget -O- https://github.com/coredns/coredns/releases/download/v1.6.9/coredns_1.6.9_linux_arm64.tgz|tar xvz; chmod +x coredns ;mv coredns /usr/bin" || true
+RUN /bin/bash -c " uname -m|grep x86_64 && wget -O- https://github.com/coredns/coredns/releases/download/v1.6.9/coredns_1.6.9_linux_amd64.tgz|tar xvz;ls; chmod +x coredns ;mv coredns /usr/bin" || true
+RUN /bin/bash -c " uname -m|grep aarch64 && wget -O- https://github.com/coredns/coredns/releases/download/v1.6.9/coredns_1.6.9_linux_arm64.tgz|tar xvz;ls; chmod +x coredns ;mv coredns /usr/bin" || true
 #RUN wget -O- "https://github.com/coredns/coredns/releases/download/v1.6.9/coredns_1.6.9_linux_amd64.tgz" |tar xvz -C /usr/bin && chmod +x /usr/bin/coredns  && 
 
 #RUN /bin/ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime && export DEBIAN_FRONTEND=noninteractive  && apt-get update &&  apt-get -y  install lua5.1 luarocks curl wget libssl-dev dnsutils gnupg2 && apt-get clean 
@@ -19,14 +19,13 @@ RUN /bin/bash -c " uname -m|grep aarch64 && wget -O- https://github.com/coredns/
 # Hackey mc' hackerson startup script
 ADD start-dnsdist.sh /start.sh
 EXPOSE 53
-CMD /start.sh
+entrypoint /bin/bash /start.sh
 RUN mkdir -p /var/run/pdns-recursor 
 # Copy over config files
-COPY blocklistgen /
-COPY files-pdns/recursor.conf adlistindex.list /etc/powerdns/
-COPY files-pdns/dnsdist.conf /etc/powerdns/
+COPY WHITELIST_BYPASS.sh WHITELIST_DELETEONLY.sh blocklistgen /
+COPY files-pdns/dnsdist.conf files-pdns/recursor.conf adlistindex.list /etc/powerdns/
 COPY files-pdns/rsyslog.conf /etc/rsyslog.conf
 COPY files-pdns/lua/* /etc/powerdns/
 COPY Corefile /etc/coredns/Corefile
-
+RUN ln -sf /etc/powerdns/dnsdist.conf /etc/powerdns/dnsdist.lua
 #RUN mkdir /etc/powerdns/lua

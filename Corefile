@@ -2,7 +2,7 @@
 ##https://.:50443 tls://.:853 tls://.:953 {
 #tls://.:853 tls://.:953 {
 #tls /etc/letsencrypt/live/your-domain.lan/fullchain.pem  /etc/letsencrypt/live/your-domain.lan/privkey.pem /etc/letsencrypt/live/your-domain.lan/chain.pem
-#bind 10.1.1.1
+##bind 10.1.1.1
 #bind 0.0.0.0
 ##forward . 1.1.1.1
 #proxy . 9.9.9.9:53 8.8.4.4:53
@@ -35,7 +35,15 @@
       fallthrough
     }
     loadbalance round_robin
+
+## uncomment next line if using dot
     forward . 127.0.0.1:5301 127.0.0.1:5302 127.0.0.1:5303
+
+#### see your "Installation section of the dot provide"
+##    forward . tls://45.90.28.123:853 tls://[2a07:a8c0::ab:cdef]:853  tls://[2a07:a8c1::ab:cdef]:853   {
+##        tls_servername abcdef.dns.nextdns.io
+#    health_check 45s
+#    }
     cache 360
     #log
 }
@@ -48,7 +56,16 @@
       fallthrough
     }
     loadbalance round_robin
+
+## uncomment next line if using dot
     forward . 127.0.0.1:5301 127.0.0.1:5302 127.0.0.1:5303
+
+#### see your "Installation section of the dot provide"
+##    forward . tls://45.90.28.123:853 tls://[2a07:a8c0::ab:cdef]:853  tls://[2a07:a8c1::ab:cdef]:853   {
+##        tls_servername abcdef.dns.nextdns.io
+#    health_check 45s
+#    }
+
     cache 360
     #log
 }
@@ -61,7 +78,17 @@
       fallthrough
     }
     loadbalance round_robin
+
+
+## uncomment next line if using dot
     forward . 127.0.0.1:5301 127.0.0.1:5302 127.0.0.1:5303
+
+#### see your "Installation section of the dot provide"
+##    forward . tls://45.90.28.123:853 tls://[2a07:a8c0::ab:cdef]:853  tls://[2a07:a8c1::ab:cdef]:853   {
+##        tls_servername abcdef.dns.nextdns.io
+#    health_check 45s
+#    }
+
     cache 360
     #log
 }

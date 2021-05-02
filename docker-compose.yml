@@ -32,16 +32,21 @@ services:
       - ./files-pdns/lua/sinkhole.lua:/etc/powerdns/sinkhole.lua:ro,consistent
       - ./files-pdns/lua/syslog.lua:/etc/powerdns/syslog.lua:ro,consistent
       - ./files-pdns/lua/tester.lua:/etc/powerdns/tester.lua:ro,consistent
-    ports:
-      - 51820:51820/udp
+      - ./userconfig:/userconfig:rw,consistent
+    #ports:
+    #  - 51820:51820/udp
     networks:
       dns:
         ipv4_address: 172.23.53.53
+
 networks:
    dns:
     config:
       - subnet: 172.23.53.0/24
-
+    external: true
+#    ipam:
+#      config:
+#        - subnet: 172.23.53.0/24
   redis:
     networks:
       dns:

@@ -1,15 +1,17 @@
 REDIS_HOST=$1
 [[ -z "${REDIS_HOST}" ]] && REDIS_HOST=redis
 
+CURLOPT=""
+curl -x socks5://127.0.0.1:9050 google.com > /dev/null && CURLOPT=" -x socks5://127.0.0.1:9050 "
 mkdir -p /dev/shm/blocklists/;
 cd /dev/shm/blocklists/;
 redislists=""
 find /dev/shm/blocklists -mtime +3 -delete
 for list in $(cat /etc/powerdns/adlistindex.list|grep ^http ) ;do
-    listuuid=$(echo "$list"|base64 -w 0|tr -cd 'A-Za-z0-9');
+    listuuid=$(echo "$list"|base64 |tr -d '\n' |tr -cd 'A-Za-z0-9');
     listsum=$(echo "$listuuid"|sed 's/ -//g;s/\t-//g')
     echo gettin "${list}" to $listuuid ;
-    wget -c --timeout=10 -A "Firefox Mozilla 66.6"  "$list" -O "${listuuid}".raw &
+    curl  $CURLOPT --connect-timeout 15 --happy-eyeballs-timeout-ms 2000  -A "Firefox Mozilla 66.6"  "$list" > "${listuuid}".raw 2> "${listuuid}".download.log &
     redislists="$redislists"'||| SET "'$listuuid'" "'$list'"' ;
 done ;
 sleep 2 ;
@@ -26,6 +28,7 @@ echo "$redislists"|sed 's/|||/\n/g'|redis-cli -h ${REDIS_HOST} --pipe
 echo inserting dummy list
 time (grep -v -e ^127.0.0.1 -e ^::1 -e ^ff02:: -e ^fe80:: -e ^0.0.0.0 /dev/shm/blocklists/aHR0cHM6Ly*.raw |grep -h -v -e '^!' -e '^\t' -e '^ ' -e '^#' -e ^http  |sed 's/^\(127.0.0.1\|0.0.0.0\)\( \|\t\)//g' |grep '^[a-z0-9\.\-]*$'| awk '!x[$0]++' | sed 's/.\+/SET "\0." "blocked"/g' |pv --rate --average-rate --bytes --rate-limit 3000024 |redis-cli  -h ${REDIS_HOST} --pipe )
 
+[[ $(sed 's/ \+/ /g' /proc/meminfo|grep ^MemFre|cut -d" " -f 2) -ge 666666 ]] && {
 echo updating redis block entries ;
 
 ##dbsize=$(echo dbsize|redis-cli  -h ${REDIS_HOST} |cut -d" " -f2)
@@ -39,9 +42,9 @@ listcount=$(ls -1 /dev/shm/blocklists/aHR0cHM6Ly*.raw|wc -l)
 
 listnum=0
 for list in /dev/shm/blocklists/aHR0cHM6Ly*.raw ;do
-  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*1)) ]] && sleep 0.1
-  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*2)) ]] && sleep 0.3
-  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*3)) ]] && sleep 0.5
+  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*1)) ]] && sleep 0.3
+  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*2)) ]] && sleep 1
+  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*3)) ]] && sleep 2
   let listnum+=1;
   listsum=$(echo $(basename ${list//.raw/}) |md5sum |sed 's/ -//g;s/\t-//g;s/ //g')
   listsize=$(cat $list|wc -l)
@@ -61,7 +64,7 @@ for list in /dev/shm/blocklists/aHR0cHM6Ly*.raw ;do
     #sed 's/\.\+$/./g;s/^/SET /g;s/$/ "'${hostsum}'"/g';
     done &
    done |pv  --rate --average-rate --bytes --rate-limit 3000024 |redis-cli  -h ${REDIS_HOST} --pipe 
-
+echo ; };
 
 
 ####count=0
