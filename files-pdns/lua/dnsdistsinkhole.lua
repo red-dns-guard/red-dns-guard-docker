@@ -11,9 +11,9 @@ local returnLOCALHOST = false
 local returnCNAME = false
 ---local returnLOCALHOST = true
 ---local returnCNAME = true
-local logQUERIES = false
+local logQUERIES = true
 local logBLOCKED = true
-local logNXDOMAIN = false
+local logNXDOMAIN = true
 
 function quote(str)
     return '"'..str..'"'

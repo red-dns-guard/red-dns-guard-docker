@@ -1,12 +1,16 @@
 REDIS_HOST=$1
 [[ -z "${REDIS_HOST}" ]] && REDIS_HOST=redis
-
+echo ping redis
+echo ping|redis-cli -h ${REDIS_HOST}
 CURLOPT=""
+echo "see if we can tunnel"
 curl -x socks5://127.0.0.1:9050 google.com > /dev/null && CURLOPT=" -x socks5://127.0.0.1:9050 "
 mkdir -p /dev/shm/blocklists/;
 cd /dev/shm/blocklists/;
 redislists=""
+echo "purging old blocklists"
 find /dev/shm/blocklists -mtime +3 -delete
+echo "getting lists"
 for list in $(cat /etc/powerdns/adlistindex.list|grep ^http ) ;do
     listuuid=$(echo "$list"|base64 |tr -d '\n' |tr -cd 'A-Za-z0-9');
     listsum=$(echo "$listuuid"|sed 's/ -//g;s/\t-//g')
@@ -20,7 +24,8 @@ sleep 2;
 wait  ;
 
 echo $redislists
-#echo -n 'return {' > /dev/shm/blacklist.lua; 
+#echo -n 'return {' > /dev/shm/blacklist.lua;
+
 echo updating redis  lists entries;
 echo "$redislists"|sed 's/|||/\n/g'|redis-cli -h ${REDIS_HOST} --pipe
 ## todo : rectify adblock lists;
@@ -31,43 +36,43 @@ time (grep -v -e ^127.0.0.1 -e ^::1 -e ^ff02:: -e ^fe80:: -e ^0.0.0.0 /dev/shm/b
 
 [[ $(sed 's/ \+/ /g' /proc/meminfo|grep ^MemFre|cut -d" " -f 2) -ge 32768 ]] || {  echo "not enough ram , needed 32768,got "$(sed 's/ \+/ /g' /proc/meminfo|grep ^MemFre|cut -d" " -f 2) ; } ;
 
-[[ $(sed 's/ \+/ /g' /proc/meminfo|grep ^MemFre|cut -d" " -f 2) -ge 32768 ]] && {
-echo updating redis block entries ;
-
-##dbsize=$(echo dbsize|redis-cli  -h ${REDIS_HOST} |cut -d" " -f2)
-##[[ -z $dbsize ]] && dbsize=1;
-##[[ 0 -eq $dbsize ]] && dbsize=1;
-
-
-listcount=$(ls -1 /dev/shm/blocklists/aHR0cHM6Ly*.raw|wc -l)
-[[ -z $listcount ]] && listcount=1;
-[[ 0 -eq $listcount ]] && listcount=1;
-
-listnum=0
-for list in /dev/shm/blocklists/aHR0cHM6Ly*.raw ;do
-  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*1)) ]] && sleep 0.3
-  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*2)) ]] && sleep 1
-  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*3)) ]] && sleep 2
-  let listnum+=1;
-  listsum=$(echo $(basename ${list//.raw/}) |md5sum |sed 's/ -//g;s/\t-//g;s/ //g')
-  listsize=$(cat $list|wc -l)
-  [[ -z $listsize ]] && listsize=1;
-  [[ 0 -eq $listsize ]] && listsize=1;
-  count=0
-  grep -h -v -e '^!' -e '^\t' -e '^ ' -e '^#' "$list" | grep -v -e ^127.0.0.1 -e ^::1 -e ^ff02:: -e ^fe80:: -e ^0.0.0.0  | awk '!x[$0]++' |sed 's/^\(127.0.0.1\|0.0.0.0\)\( \|\t\)//g;s/.\+/"\0."/g' |grep '^"[a-z0-9\.\-]*"' | while read blockhost;do
-    [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*1)) ]] && sleep 0.05
-    [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*2)) ]] && sleep 0.1
-    let count+=1;
-    [[ 0 -eq $(($count%10)) ]] && echo -ne  '\r                            \r'"jobs: $(jobs|wc -l) list: $listnum"'  \t'" of $listcount"' \t'" | count: "$count" of $listsize progress: "$(($count*100/$listsize))" percent  "'\t'  >&2
-    #hostsum=$(echo "$blockhost"|sed 's/ -//g;s/\t-//g')
-    #echo -en '\r'${blockhost}  >&2 
-
-    #echo 'SET "'${listsum}'" "'${hostsum}'.BLOCK"'
-    echo ;echo 'APPEND '${blockhost}' ":'${listsum}'"'
-    #sed 's/\.\+$/./g;s/^/SET /g;s/$/ "'${hostsum}'"/g';
-    done &
-   done |pv  --rate --average-rate --bytes --rate-limit 3000024 |redis-cli  -h ${REDIS_HOST} --pipe 
-echo ; };
+#######################[[ $(sed 's/ \+/ /g' /proc/meminfo|grep ^MemFre|cut -d" " -f 2) -ge 32768 ]] && {
+#######################echo updating redis block entries ;
+#######################
+#########################dbsize=$(echo dbsize|redis-cli  -h ${REDIS_HOST} |cut -d" " -f2)
+#########################[[ -z $dbsize ]] && dbsize=1;
+#########################[[ 0 -eq $dbsize ]] && dbsize=1;
+#######################
+#######################
+#######################listcount=$(ls -1 /dev/shm/blocklists/aHR0cHM6Ly*.raw|wc -l)
+#######################[[ -z $listcount ]] && listcount=1;
+#######################[[ 0 -eq $listcount ]] && listcount=1;
+#######################
+#######################listnum=0
+#######################for list in /dev/shm/blocklists/aHR0cHM6Ly*.raw ;do
+#######################  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*1)) ]] && sleep 0.05
+#######################  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*2)) ]] && sleep 0.235
+#######################  [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*3)) ]] && sleep 0.42
+#######################  let listnum+=1;
+#######################  listsum=$(echo $(basename ${list//.raw/}) |md5sum |sed 's/ -//g;s/\t-//g;s/ //g')
+#######################  listsize=$(cat $list|wc -l)
+#######################  [[ -z $listsize ]] && listsize=1;
+#######################  [[ 0 -eq $listsize ]] && listsize=1;
+#######################  count=0
+#######################  grep -h -v -e '^!' -e '^\t' -e '^ ' -e '^#' "$list" | grep -v -e ^127.0.0.1 -e ^::1 -e ^ff02:: -e ^fe80:: -e ^0.0.0.0  | awk '!x[$0]++' |sed 's/^\(127.0.0.1\|0.0.0.0\)\( \|\t\)//g;s/.\+/"\0."/g' |grep '^"[a-z0-9\.\-]*"' | while read blockhost;do
+#######################    [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*1)) ]] && sleep 0.05
+#######################    [[ $(cut -d\. -f1 /proc/loadavg) -ge $(($(nproc)*2)) ]] && sleep 0.1
+#######################    let count+=1;
+#######################    [[ 0 -eq $(($count%10)) ]] && echo -ne  '\r                            \r'"jobs: $(jobs|wc -l) list: $listnum"'  \t'" of $listcount"' \t'" | count: "$count" of $listsize progress: "$(($count*100/$listsize))" percent  "'\t'  >&2
+#######################    #hostsum=$(echo "$blockhost"|sed 's/ -//g;s/\t-//g')
+#######################    #echo -en '\r'${blockhost}  >&2 
+#######################
+#######################    #echo 'SET "'${listsum}'" "'${hostsum}'.BLOCK"'
+#######################    echo ;echo 'APPEND '${blockhost}' ":'${listsum}'"'
+#######################    #sed 's/\.\+$/./g;s/^/SET /g;s/$/ "'${hostsum}'"/g';
+#######################    done & sleep 2
+#######################done |pv  --rate --average-rate --bytes --rate-limit 3000024 |redis-cli  -h ${REDIS_HOST} --pipe 
+#######################  echo ; };
 
 
 ####count=0
