@@ -47,6 +47,7 @@ else
                pdnslog(json.encode({app=prepend,id=msg,querydetails=details}), pdns.loglevels.Warning)
         elseif code >= 3000 and code <= 3999 then
                pdnslog(json.encode({app=prepend,id=msg,querydetails=details}), pdns.loglevels.Critical)
+        else   
         end
     end
 end

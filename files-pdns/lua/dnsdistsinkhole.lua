@@ -3,9 +3,9 @@ pcall(require, "luarocks.require")
 redis = require 'redis'
 require "tester"
 require "syslog"
+--require "syslog-dnsdist" -- merged
 require "redisconn"
 require "pdnsfunctions"
-require "syslog-dnsdist"
 
 
 local controlIP = "127.0.0.1" 
