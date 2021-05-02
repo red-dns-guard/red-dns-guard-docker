@@ -1,8 +1,9 @@
 #!/bin/bash
 
 
+
 test -f /userconfig || mkdir /userconfig
-test -f /userconfig/Corefile  && cat /userconfig/Corefile > /etc/coredns/Corefile 
+test -f /userconfig/Corefile && { cat /userconfig/Corefile > /etc/coredns/Corefile ; } ;
 # Check our environment out for a syslog server
 [[ -z "${REDIS_HOST}" ]] && REDIS_HOST=redis
 
@@ -14,6 +15,7 @@ EOF
 
 fi
 
+[[ -z "$DNSDISTKEY" ]] && DNSDISTKEY=$(for rounds in $(seq 1 24);do cat /dev/urandom |tr -cd '[:alnum:]_\-.'  |head -c48;echo ;done|grep -e "_" -e "\-" -e "\."|grep ^[a-zA-Z0-9]|grep [a-zA-Z0-9]$|tail -n1)
 cat /etc/rsyslog.conf
 mkdir -p /etc/coredns/hosts/alternates/fakenews-gambling/
 wget -c "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling/hosts" -O /etc/coredns/hosts/alternates/fakenews-gambling/hosts
