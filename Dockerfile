@@ -22,7 +22,7 @@ EXPOSE 53
 entrypoint /bin/bash /start.sh
 RUN mkdir -p /var/run/pdns-recursor 
 # Copy over config files
-COPY WHITELIST_BYPASS.sh WHITELIST_DELETEONLY.sh blocklistgen /
+COPY WHITELIST.sh WHITELIST_DELETEONLY.sh blocklistgen /
 COPY files-pdns/dnsdist.conf files-pdns/recursor.conf adlistindex.list /etc/powerdns/
 COPY files-pdns/rsyslog.conf /etc/rsyslog.conf
 COPY files-pdns/lua/* /etc/powerdns/
