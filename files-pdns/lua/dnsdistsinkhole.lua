@@ -200,7 +200,7 @@ function preresolve( dq )
                 end
                 if ( pdns == nil ) then
                 -- only reached  when dnsdist shall not return cname or localhost
-                    return DNSAction.SpoofRaw, "\\003aaa\\004bbbb\\011"..tostring(blacklist_domain)
+                    return DNSAction.SpoofRaw, "\003"..tostring(blacklist_domain)
                 else
                     dq:addAnswer(pdns.TXT, quote(tostring(blacklist_domain)) )
                     return true
