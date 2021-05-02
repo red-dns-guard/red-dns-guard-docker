@@ -1,17 +1,20 @@
 #!/bin/bash
 
-test -f /userconfig || mkddir /userconfig
+
+test -f /userconfig || mkdir /userconfig
 test -f /userconfig/Corefile  && cat /userconfig/Corefile > /etc/coredns/Corefile 
 # Check our environment out for a syslog server
 [[ -z "${REDIS_HOST}" ]] && REDIS_HOST=redis
 
+mkdir -p /var/spool/rsyslog
 if [ ! -z ${SYSLOG_HOST+x} ]; then
     cat >> /etc/rsyslog.conf << EOF
     *.* @$SYSLOG_HOST:514
 EOF
 
 fi
-#cat /etc/rsyslog.conf
+
+cat /etc/rsyslog.conf
 mkdir -p /etc/coredns/hosts/alternates/fakenews-gambling/
 wget -c "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling/hosts" -O /etc/coredns/hosts/alternates/fakenews-gambling/hosts
 test -f /etc/coredns/hosts/alternates/fakenews-gambling/hosts || { echo > /etc/coredns/hosts/alternates/fakenews-gambling/hosts ; } ;

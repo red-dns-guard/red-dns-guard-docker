@@ -5,6 +5,8 @@ require "tester"
 require "syslog"
 require "redisconn"
 require "pdnsfunctions"
+require "syslog-dnsdist"
+
 
 local controlIP = "127.0.0.1" 
 local returnLOCALHOST = false
@@ -162,7 +164,6 @@ local options = get_options()
 getredis(options["redis-servers"])
 
 
----require "syslog-dnsdist"
 ---makeKey()
 ---setKey("sWWalOkXJH4cNVwyLaJdomJFOrkmi4l1av7R1fNsg40=")
 ---newServer({address="10.1.1.1:533", qps=300})
