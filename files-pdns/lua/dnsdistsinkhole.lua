@@ -17,6 +17,12 @@ local logQUERIES =  false
 local logBLOCKED =  true
 local logNXDOMAIN = false
 
+if ( pdns == nil ) then  -- gtfo with dnsdist not being able to return TXT ( no , spoofraw won't do it )
+  returnCNAME     = false
+  returnLOCALHOST = true
+  --returnCNAME = true  -- oh , second GTFO, dnsdist refuses to return valid cnames
+  -- dnsdist seems to be pure crap as the others 
+end
 
 local function isNaN( v )
    if ( v == nil ) then
@@ -30,6 +36,23 @@ end
 function quote(str)
     return '"'..str..'"'
 end
+
+function refusedquery(dq)
+return DNSAction.Refused
+end
+
+
+
+addAction(AndRule({QNameRule('blocked.'), QTypeRule(DNSQType.MX)}),LuaAction(refusedquery) )
+addAction('blocked.',SpoofAction({'127.0.0.1','::1'} , {ttl=3600} ))
+
+--addAction(AndRule({QNameRule('blocked.'), QTypeRule(DNSQType.AAAA)}),SpoofAction("::1", {ttl=3600}) )
+--addAction(AndRule({QNameRule('blocked.'), QTypeRule(DNSQType.A)}),SpoofAction("127.0.0.1", {ttl=3600}) )
+
+---addAction(AndRule({QNameRule('host.blocked.'), QTypeRule(DNSQType.MX)}),LuaAction(refusedquery) )
+---addAction(AndRule({QNameRule('host.blocked.'), QTypeRule(DNSQType.AAAA)}),SpoofAction("::1", {ttl=3600}) )
+---addAction(AndRule({QNameRule('host.blocked.'), QTypeRule(DNSQType.A)}),SpoofAction("127.0.0.1", {ttl=3600}) )
+
 
 ----function nxdomain( dq )
 -------        return pdns.PASS, {}
@@ -176,35 +199,43 @@ function preresolve( dq )
                 -- return record type with the IP of sinkhole
                 --- return 0, { {qtype=qtype, content=blacklist_domain} }
                 if(returnLOCALHOST == true) then
-                    if(dq.qtype == pdns.AAAA) then
+                    --if(dq.qtype == pdns.AAAA) then
+                    if(dq.qtype == DNSQType.AAAA) then
                         if ( pdns == nil ) then
                            return DNSAction.Spoof, "::1" -- to local v6
                         else
                             dq:addAnswer(dq.qtype,"::1")    
                         end
                         
-                    elseif(dq.qtype == pdns.A) then
+                    elseif(dq.qtype == DNSQType.A) then
                         if ( pdns == nil ) then
                             return DNSAction.Spoof, "127.0.0.1" -- to local v6
                         else
                             dq:addAnswer(dq.qtype,"127.0.0.1")
                         end
-
+                    else
+                        return DNSAction.Refused
                     end
                 elseif(returnCNAME == true) then
                         if ( pdns == nil ) then
-                            return DNSAction.Spoof, tostring(blacklist_domain) -- to CNAME
+                            return DNSAction.Spoof, "host."..tostring(blacklist_domain) , {ttl=120,aa=true} -- to CNAME
                         else
-                            dq:addAnswer(pdns.CNAME, tostring(blacklist_domain) )
+                            dq:addAnswer(pdns.CNAME, "host."..tostring(blacklist_domain) )
                         end
-                end
-                if ( pdns == nil ) then
-                -- only reached  when dnsdist shall not return cname or localhost
-                    return DNSAction.SpoofRaw, "\\003"..tostring(blacklist_domain)
                 else
-                    dq:addAnswer(pdns.TXT, quote(tostring(blacklist_domain)) )
-                    return true
-                end
+                    if ( pdns == nil ) then
+                    -- only reached  when dnsdist shall not return cname or localhost
+                    -- dnsdist refuses to work like documented (spoofing raw bla , just a joke in their manual)
+                    -- catched above to return cname on dnsdist (gtfo!)
+                        ---return DNSAction.SpoofRaw, "asd"
+                        ---SpoofRawAction({"\003aaa\004bbbb", "\003ccc"})
+                        ---local answ=dq.qname:toDNSString()
+                        return DNSAction.SpoofRaw, "\003aaa\004bbbb" , {ttl=120}
+                    else
+                        dq:addAnswer(pdns.TXT, quote(tostring(blacklist_domain)) )
+                        return true
+                    end
+                 end
                 --- dq.addAnswer(pdns.NXDOMAIN,'',120,myqname)
             end
         end
