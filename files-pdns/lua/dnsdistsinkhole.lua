@@ -53,8 +53,8 @@ addAction(AndRule({QNameRule('blocked.'), QTypeRule(DNSQType.MX)}),LuaAction(ref
 --addAction(AndRule({QNameRule('blocked.'), QTypeRule(DNSQType.A)}),SpoofAction("127.0.0.1", {ttl=3600}) )
 
 addAction(AndRule({QNameRule('host.blocked.'), QTypeRule(DNSQType.MX)}),LuaAction(refusedquery) )
-addAction(AndRule({QNameRule('host.blocked.'), QTypeRule(DNSQType.AAAA)}),SpoofAction("::1", {ttl=3600}) )
-addAction(AndRule({QNameRule('host.blocked.'), QTypeRule(DNSQType.A)}),SpoofAction("127.0.0.1", {ttl=3600}) )
+addAction(AndRule({QNameRule('host.blocked.'), QTypeRule(DNSQType.AAAA)}),SpoofAction("::1" )
+addAction(AndRule({QNameRule('host.blocked.'), QTypeRule(DNSQType.A)}),SpoofAction("127.0.0.1" )
 
 
 ----function nxdomain( dq )
