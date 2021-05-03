@@ -44,6 +44,9 @@ end
 
 
 addAction(AndRule({QNameRule('blocked.'), QTypeRule(DNSQType.MX)}),LuaAction(refusedquery) )
+
+
+-- adding table does not work stable -- yay: senseless rules thx to dnsdist crap
 --addAction('blocked.',SpoofAction({'127.0.0.1','::1'} , {ttl=3600} ))
 
 --addAction(AndRule({QNameRule('blocked.'), QTypeRule(DNSQType.AAAA)}),SpoofAction("::1", {ttl=3600}) )
