@@ -22,6 +22,7 @@ services:
      # Logs via UDP and this gets parsed in /start.sh
      # SYSLOG_HOST: '192.168.0.1'
       - SYSLOG_HOST=127.0.0.1
+      - REDIS_HOST=172.23.53.234
     container_name: dns-robin
     hostname: dns-robin
 ##dev
