@@ -26,7 +26,7 @@ services:
      # Set a SYSLOG_HOST here if you'd like this to log to a different syslog server - name or IP
      # Logs via UDP and this gets parsed in /start.sh
      # SYSLOG_HOST: '192.168.0.1'
-      - SYSLOG_HOST=${SYSLOG_HOST:-127.0.0.1}
+      - SYSLOG_HOST=${SYSLOG_HOST}
       - REDIS_HOST=${SUBNET_PREFIX:-172.27}.53.234
       - DNSDISTKEY=$DNSDISTKEY
     container_name: dns-robin
