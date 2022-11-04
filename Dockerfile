@@ -5,7 +5,8 @@ MAINTAINER profit <profit@ccmo.me>
 # Grab powerdns bits
 #RUN apk add dnsdist-luajit || apk add dnsdist lua-redis lua-cjson coreutils tor
 #RUN apk add luajit lua5.1-redis  lua5.1-socket lua5.1-cjson lua-json4 bash rsyslog curl wget sed grep jq redis pv socat
-RUN apt update && apt -y install dnsdist socat pv curl wget redis-server curl bash rsyslog lua-socket-dev lua-json lua-redis-dev && apt-get clean all
+RUN apt update && apt -y install dnsdist socat pv curl wget redis-server curl bash rsyslog lua-socket-dev lua-json lua-redis-dev bind9-host busybox && apt-get clean all
+RUN ( which nslookup||ln -s $(which busybox) /usr/bin/nslookup) || true 
 
 #RUN apk add luajit lua5.2-redis  lua5.2-socket lua5.2-cjson lua-json4 bash rsyslog curl wget sed grep jq redis pv socat
 RUN /bin/bash -c " uname -m|grep x86_64 && wget -O- https://github.com/coredns/coredns/releases/download/v1.6.9/coredns_1.6.9_linux_amd64.tgz|tar xvz;ls; chmod +x coredns ;mv coredns /usr/bin" || true
