@@ -2,7 +2,7 @@
 function getredis( servers )
 	redis = require 'redis'
 	local redisparams = {
-		host = 'nothing',
+		host = 'redis',
 		port = 6379
 	}
 	for i = 1, #servers do
@@ -15,6 +15,8 @@ function getredis( servers )
 			break
 		else
 			sendsyslog(2001, servers[i])
+               	        error("Cannot connect to redis SRV " .. tostring(redisparams["host"]))
+
 		end
 	end
 	if client == nil then
