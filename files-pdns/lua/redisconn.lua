@@ -7,6 +7,7 @@ function getredis( servers )
 	}
 	for i = 1, #servers do
 		redisparams["host"] = servers[i]
+                error("TRY connect to redis SRV " .. tostring(redisparams["host"]))
 		local ok, tclient = pcall(redis.connect, redisparams)
 		if(ok) then
 			sendsyslog(1000, servers[i])
