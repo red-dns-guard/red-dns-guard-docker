@@ -27,7 +27,7 @@ services:
      # Logs via UDP and this gets parsed in /start.sh
      # SYSLOG_HOST: '192.168.0.1'
       - SYSLOG_HOST=${SYSLOG_HOST:-127.0.0.1}
-      - REDIS_HOST=${SUBNET_PREFIX:-172.17}.53.234
+      - REDIS_HOST=${SUBNET_PREFIX:-172.27}.53.234
       - DNSDISTKEY=$DNSDISTKEY
     container_name: dns-robin
     hostname: dns-robin
@@ -45,11 +45,11 @@ services:
     #  - 51820:51820/udp
     networks:
       dns:
-        ipv4_address: ${SUBNET_PREFIX:-172.17}.53.53
+        ipv4_address: ${SUBNET_PREFIX:-172.27}.53.53
   redis:
     networks:
       dns:
-        ipv4_address: ${SUBNET_PREFIX:-172.17}.53.234
+        ipv4_address: ${SUBNET_PREFIX:-172.27}.53.234
     image: redis
 #    ports:
 #     - 127.0.0.1:6379:6379
@@ -64,4 +64,4 @@ networks:
     external: true
 #    ipam:
 #      config:
-#        - subnet: ${SUBNET_PREFIX:-172.17}.53.0/24
+#        - subnet: ${SUBNET_PREFIX:-172.27}.53.0/24
