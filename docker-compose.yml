@@ -15,6 +15,11 @@ services:
 #      - "10.1.1.1:53:53/tcp"
 #      - "10.1.1.1:53:53/udp"
 #      - "10.1.1.1:53:53/tcp"
+      - "${BINDIP:-127.0.0.1}:5333:53/udp"
+      - "${BINDIP:-127.0.0.1}:5333:53/tcp"
+      - "${BINDIP_HIGH:-127.0.0.1}:53:53/udp"
+      - "${BINDIP_HIGH:-127.0.0.1}:53:53/tcp"
+
     links:
       - redis
     environment: 
@@ -22,7 +27,8 @@ services:
      # Logs via UDP and this gets parsed in /start.sh
      # SYSLOG_HOST: '192.168.0.1'
       - SYSLOG_HOST=127.0.0.1
-      - REDIS_HOST=172.23.53.234
+      - REDIS_HOST=${SUBNET_PREFIX:-172.17}.53.234
+      - DNSDISTKEY=$DNSDISTKEY
     container_name: dns-robin
     hostname: dns-robin
 ##dev
@@ -39,11 +45,11 @@ services:
     #  - 51820:51820/udp
     networks:
       dns:
-        ipv4_address: 172.23.53.53
+        ipv4_address: ${SUBNET_PREFIX:-172.17}.53.53
   redis:
     networks:
       dns:
-        ipv4_address: 172.23.53.234
+        ipv4_address: ${SUBNET_PREFIX:-172.17}.53.234
     image: redis
 #    ports:
 #     - 127.0.0.1:6379:6379
@@ -58,4 +64,4 @@ networks:
     external: true
 #    ipam:
 #      config:
-#        - subnet: 172.23.53.0/24
+#        - subnet: ${SUBNET_PREFIX:-172.17}.53.0/24
