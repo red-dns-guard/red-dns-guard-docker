@@ -60,7 +60,7 @@ services:
 
 
 networks:
-  dns:
+  ${DNS_NETWORK:-dns}:
     external: true
 #    ipam:
 #      config:
