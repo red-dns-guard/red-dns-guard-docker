@@ -1,5 +1,10 @@
 # red-dns-guard-docker
 
+## Config files:
+* files-pdns/lua/lua-options.conf
+  this one is not tracked by git , so adjust ist according to SUBNET_PREFIX=
+
+
 
 corefile main resolver example with nextdns 
 
