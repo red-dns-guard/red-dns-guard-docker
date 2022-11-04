@@ -38,7 +38,8 @@ rsyslogd &
 ( 
 waittime=1;
 server_ready=no;
-waittime=1;while [[ "$server_ready" == "no" ]] ;do ping $REDIS_HOST -c 2 && server_ready=yes;echo waiting "$waittime";sleep $waittime;waittime=$(($waittime*2));done
+waittime=1;while [[ "$server_ready" == "no" ]] ;do (ping $REDIS_HOST -c 2 -w 1  &>/dev/null && echo "PING"|socat stdio TCP:$REDIS_HOST:6379)|grep PONG && server_ready=yes;echo waiting "$waittime";sleep $waittime;waittime=$(($waittime*2));done
+
 
 cd /etc/powerdns ;
 while(true);do
