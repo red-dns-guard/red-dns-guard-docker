@@ -1,6 +1,6 @@
 #FROM alpine
 #FROM kometchtech/dnsdist:latest
-#FROM ubuntu:20.04
+FROM ubuntu:20.04
 MAINTAINER profit <profit@ccmo.me>
 # Grab powerdns bits
 #RUN apk add dnsdist-luajit || apk add dnsdist lua-redis lua-cjson coreutils tor
