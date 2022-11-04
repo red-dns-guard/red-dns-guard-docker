@@ -16,7 +16,6 @@ echo "*.* @$SYSLOG_HOST:514" >  /etc/rsyslog.conf
 fi
 
 [[ -z "$DNSDISTKEY" ]] && export DNSDISTKEY=$(for rounds in $(seq 1 24);do cat /dev/urandom |tr -cd '[:alnum:]_\-.'  |head -c48;echo ;done|grep -e "_" -e "\-" -e "\."|grep ^[a-zA-Z0-9]|grep [a-zA-Z0-9]$|tail -n1)
-cat /etc/rsyslog.conf
 
 ( 
 test -e /etc/coredns/hosts/alternates/fakenews-gambling/ || mkdir -p /etc/coredns/hosts/alternates/fakenews-gambling/
