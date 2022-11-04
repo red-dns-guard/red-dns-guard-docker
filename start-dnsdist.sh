@@ -29,7 +29,7 @@ test -f /etc/coredns/hosts/alternates/fakenews-gambling/hosts || { echo > /etc/c
 rsyslogd &
 ( which tor && /etc/init.d/tor start ) & 
 
-( sleep 10; bash /blocklistgen
+( sleep 10; bash /blocklistgen $REDIS_HOST
 sleep 130 ;bash /WHITE-dnsdist.sh ) &
 
 
