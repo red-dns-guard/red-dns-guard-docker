@@ -3,9 +3,11 @@ REDIS_HOST=$1
 echo ping redis
 echo ping|redis-cli -h ${REDIS_HOST}
 CURLOPT=""
-echo "see if we can tunnel"
+echo -n "see if we can tunnel.."
 curl -x socks5://127.0.0.1:9050 google.com > /dev/null && CURLOPT=" -x socks5://127.0.0.1:9050 "
-mkdir -p /dev/shm/blocklists/;
+echo "$CURLOPT"
+
+test -e /dev/shm/blocklists/ || mkdir -p /dev/shm/blocklists/;
 cd /dev/shm/blocklists/;
 redislists=""
 echo "purging old blocklists"

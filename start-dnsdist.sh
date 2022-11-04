@@ -43,8 +43,20 @@ waittime=1;while [[ "$server_ready" == "no" ]] ;do
 
 ( which tor && tor 2>&1|mylogger TOR;sleep 2) &
 
-(sleep 90 ; bash /blocklistgen $REDIS_HOST 2>&1 |mylogger BLK
-sleep 130 ;test -e /WHITE-dnsdist.sh && bash /WHITE-dnsdist.sh ) & 
+
+(
+             test -e /WHITE-dnsdist.sh && bash /WHITE-dnsdist.sh 
+
+sleep 90 ;   bash /blocklistgen $REDIS_HOST 2>&1 |mylogger BLK
+
+while(true);do
+
+ sleep 86400;test -e /WHITE-dnsdist.sh && bash /WHITE-dnsdist.sh
+             test -e /WHITE-dnsdist.sh && bash /WHITE-dnsdist.sh 
+
+done
+
+) & 
 
 cd /etc/powerdns ;
 while(true);do
