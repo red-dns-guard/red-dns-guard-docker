@@ -28,7 +28,6 @@ test -e /etc/coredns/Corefile || echo "FAIL::NO COREDNS FILE"
 /usr/bin/coredns -dns.port 55555 -conf /etc/coredns/Corefile ) &
 
 rsyslogd &
-( which tor && tor 2>&1|mylogger TOR;sleep 2) &
  
 
 
@@ -39,7 +38,12 @@ waittime=1;
 server_ready=no;
 waittime=1;while [[ "$server_ready" == "no" ]] ;do 
  ping $REDIS_HOST -c 2 -w 1  2>&1 |grep " packets received"|grep  " 0 packets received " || ( echo "PING"|socat stdio TCP:$REDIS_HOST:6379 |grep PONG )&& server_ready=yes;echo waiting "$waittime";sleep $waittime;waittime=$(($waittime*2));done|mylogger INIT
-(sleep 20 ; bash /blocklistgen $REDIS_HOST 2>&1 |mylogger BLK
+
+
+
+( which tor && tor 2>&1|mylogger TOR;sleep 2) &
+
+(sleep 90 ; bash /blocklistgen $REDIS_HOST 2>&1 |mylogger BLK
 sleep 130 ;test -e /WHITE-dnsdist.sh && bash /WHITE-dnsdist.sh ) & 
 
 cd /etc/powerdns ;
