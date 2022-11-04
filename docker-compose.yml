@@ -1,4 +1,4 @@
-version: '2.2'
+version: '3.1'
 
 
 services:
@@ -15,10 +15,10 @@ services:
 #      - "10.1.1.1:53:53/tcp"
 #      - "10.1.1.1:53:53/udp"
 #      - "10.1.1.1:53:53/tcp"
-      - "${BINDIP:-127.0.0.1}:5333:53/udp"
-      - "${BINDIP:-127.0.0.1}:5333:53/tcp"
-      - "${BINDIP_HIGH:-127.0.0.1}:53:53/udp"
-      - "${BINDIP_HIGH:-127.0.0.1}:53:53/tcp"
+      - "${BINDIP:-127.0.0.2}:53:53/udp"
+      - "${BINDIP:-127.0.0.2}:53:53/tcp"
+      - "${BINDIP_HIGH:-127.0.0.3}:5333:53/udp"
+      - "${BINDIP_HIGH:-127.0.0.3}:5333:53/tcp"
 
     links:
       - redis
@@ -26,7 +26,7 @@ services:
      # Set a SYSLOG_HOST here if you'd like this to log to a different syslog server - name or IP
      # Logs via UDP and this gets parsed in /start.sh
      # SYSLOG_HOST: '192.168.0.1'
-      - SYSLOG_HOST=127.0.0.1
+      - SYSLOG_HOST=${SYSLOG_HOST:-127.0.0.1}
       - REDIS_HOST=${SUBNET_PREFIX:-172.17}.53.234
       - DNSDISTKEY=$DNSDISTKEY
     container_name: dns-robin
