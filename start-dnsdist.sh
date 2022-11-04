@@ -19,7 +19,7 @@ fi
 
 ( 
 test -e /etc/coredns/hosts/alternates/fakenews-gambling/ || mkdir -p /etc/coredns/hosts/alternates/fakenews-gambling/
-find -name hosts /etc/coredns/hosts/alternates/fakenews-gambling -mtime +2 >/dev/null && rm /etc/coredns/hosts/alternates/fakenews-gambling/hosts
+find  /etc/coredns/hosts/alternates/fakenews-gambling -name hosts -mtime +2 >/dev/null && rm /etc/coredns/hosts/alternates/fakenews-gambling/hosts
 test -e /etc/coredns/hosts/alternates/fakenews-gambling/hosts || wget -c "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling/hosts" -O /etc/coredns/hosts/alternates/fakenews-gambling/hosts &>/tmp/log.init.coredns.adblock
 
 test -e /etc/coredns/hosts/alternates/fakenews-gambling/hosts || { echo > /etc/coredns/hosts/alternates/fakenews-gambling/hosts ; } ;
