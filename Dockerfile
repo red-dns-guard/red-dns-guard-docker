@@ -29,4 +29,5 @@ COPY files-pdns/rsyslog.conf /etc/rsyslog.conf
 COPY files-pdns/lua/* /etc/powerdns/
 COPY Corefile /etc/coredns/Corefile
 RUN ln -sf /etc/powerdns/dnsdist.conf /etc/powerdns/dnsdist.lua
+RUN ln -s /usr/share/lua/5.2/ /usr/share/lua/5.3 || true 
 #RUN mkdir /etc/powerdns/lua
