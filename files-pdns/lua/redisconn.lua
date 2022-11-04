@@ -2,7 +2,7 @@
 function getredis( servers )
 	redis = require 'redis'
 	local redisparams = {
-		host = 'redis',
+		host = 'localhost',
 		port = 6379
 	}
 	for i = 1, #servers do
