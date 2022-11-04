@@ -35,22 +35,23 @@ rsyslogd &
  
 
 
-( 
+
+
+
 waittime=1;
 server_ready=no;
 waittime=1;while [[ "$server_ready" == "no" ]] ;do (ping $REDIS_HOST -c 2 -w 1  &>/dev/null && echo "PING"|socat stdio TCP:$REDIS_HOST:6379)|grep PONG && server_ready=yes;echo waiting "$waittime";sleep $waittime;waittime=$(($waittime*2));done
-
+(sleep 20 ; bash /blocklistgen $REDIS_HOST 2>&1 |mylogger BLK
+sleep 130 ;test -e /WHITE-dnsdist.sh && bash /WHITE-dnsdist.sh ) & 
 
 cd /etc/powerdns ;
 while(true);do
-  ( sleep 10; while(true);do echo 'showRules()';echo 'showServers()';sleep 360 ;done)|dnsdist  -k "$DNSDISTKEY"  -C /etc/powerdns/dnsdist.lua 2>&1 | mylogger DNS
+  ( sleep 10; while(true);do echo 'showRules()';echo 'showServers()';sleep 600;done)|dnsdist  -k "$DNSDISTKEY"  -C /etc/powerdns/dnsdist.lua 2>&1 | mylogger DNS
   sleep 0.2;
 done
 
 
-ping $REDIS_HOST -c2 && 
- bash /blocklistgen $REDIS_HOST 2>&1 |mylogger BLK
-sleep 130 ;test -e /WHITE-dnsdist.sh && bash /WHITE-dnsdist.sh ) &
+
 
 
 
