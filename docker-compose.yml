@@ -19,7 +19,12 @@ services:
       - "${BINDIP:-127.0.0.2}:53:53/tcp"
       - "${BINDIP_HIGH:-127.0.0.3}:5333:53/udp"
       - "${BINDIP_HIGH:-127.0.0.3}:5333:53/tcp"
-
+    expose:
+      - "53/udp"
+      - "53"
+      - "5380"
+      - "8053"
+      - "80"
     links:
       - redis
     environment: 
