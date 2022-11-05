@@ -37,4 +37,4 @@ RUN ln -sf /etc/powerdns/dnsdist.conf /etc/powerdns/dnsdist.lua
 RUN ln -s /usr/share/lua/5.2/ /usr/share/lua/5.3 || true 
 #RUN mkdir /etc/powerdns/lua
 
-#EXPOSE 53 53/udp 5199 853 5380 5381 8053
+EXPOSE 53 53/udp 5199 853 5380 5381 8053
