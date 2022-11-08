@@ -65,7 +65,7 @@ done
 ) & 
 
 cd /etc/powerdns ;
-  ( sleep 10; while(true);do echo 'showRules()';echo 'showServers()';sleep 600;done)|while(true);do dnsdist  -k "$DNSDISTKEY"  -C /etc/powerdns/dnsdist.lua 2>&1;sleep 0.2 ;done| mylogger DNS
+  ( sleep 10; while(true);do echo 'infolog("CLIENTS:")';echo 'topClients()'; echo 'infolog("RULES:")';echo 'showRules()';echo 'infolog("SERVERS:")';echo 'showServers()';sleep 600;done)|while(true);do dnsdist  -k "$DNSDISTKEY"  -C /etc/powerdns/dnsdist.lua 2>&1;sleep 0.2 ;done| mylogger DNS
 
 
 
