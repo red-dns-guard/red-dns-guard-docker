@@ -17,6 +17,7 @@ fi
 
 [[ -z "$DNSDISTKEY" ]] && export DNSDISTKEY=$(for rounds in $(seq 1 24);do cat /dev/urandom |tr -cd '[:alnum:]_\-.'  |head -c48;echo ;done|grep -e "_" -e "\-" -e "\."|grep ^[a-zA-Z0-9]|grep [a-zA-Z0-9]$|tail -n1)
 
+[[ -z "$DNSDISTKEY" ]] || sed 's/^setKey.\+/setKey("'$DNSDISTKEY'")/g' -i /etc/powerdns/dnsdist.conf
 ( 
 test -e /etc/coredns/hosts/alternates/fakenews-gambling/ || mkdir -p /etc/coredns/hosts/alternates/fakenews-gambling/
 find  /etc/coredns/hosts/alternates/fakenews-gambling -name hosts -mtime +2 >/dev/null && rm /etc/coredns/hosts/alternates/fakenews-gambling/hosts
