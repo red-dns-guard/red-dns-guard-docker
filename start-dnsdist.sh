@@ -4,6 +4,7 @@ test -f /userconfig || mkdir /userconfig
 test -f /userconfig/Corefile && { cat /userconfig/Corefile > /etc/coredns/Corefile ; } ;
 # Check our environment out for a syslog server
 [[ -z "${REDIS_HOST}" ]] && REDIS_HOST=redis
+[[ -z "${REDIS_HOST}" ]] || (echo redis-servers=$REDIS_HOST > /etc/powerdns/lua-options.conf)
 
 mkdir -p /var/spool/rsyslog
 if [ ! -z ${SYSLOG_HOST} ]; then
