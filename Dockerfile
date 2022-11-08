@@ -24,18 +24,21 @@ RUN /bin/bash -c " uname -m|grep aarch64 && wget -O- https://github.com/coredns/
 # Grab luarocks bits
 #RUN luarocks install luasocket && luarocks install json4lua && luarocks install redis-lua
 # Hackey mc' hackerson startup script
-ADD start-dnsdist.sh /start.sh
-entrypoint /bin/bash /start.sh
+EXPOSE 53 53/udp 5199 853 5380 5381 8053
+RUN ln -sf /etc/powerdns/dnsdist.conf /etc/powerdns/dnsdist.lua
+
+
 RUN mkdir -p /var/run/pdns-recursor 
 # Copy over config files
+
+
+ADD start-dnsdist.sh /start.sh
+entrypoint /bin/bash /start.sh
 COPY WHITELIST.sh WHITELIST_DELETEONLY.sh blocklistgen /
 COPY files-pdns/dnsdist.conf files-pdns/recursor.conf adlistindex.list /etc/powerdns/
 COPY files-pdns/rsyslog.conf /etc/rsyslog.conf
 COPY files-pdns/lua/* /etc/powerdns/
 COPY Corefile /etc/coredns/Corefile
 COPY Corefile /Corefile.default
-RUN ln -sf /etc/powerdns/dnsdist.conf /etc/powerdns/dnsdist.lua
-RUN ln -s /usr/share/lua/5.2/ /usr/share/lua/5.3 || true 
+#RUN ln -s /usr/share/lua/5.2/ /usr/share/lua/5.3 || true 
 #RUN mkdir /etc/powerdns/lua
-
-EXPOSE 53 53/udp 5199 853 5380 5381 8053
