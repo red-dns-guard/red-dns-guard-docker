@@ -18,7 +18,7 @@
 .:534 {
 #    prometheus 10.1.1.1:9153
 #    bind 10.1.1.1
-    bind 127.0.0.1
+#    bind 127.0.0.1
     loadbalance round_robin
     forward . 127.0.0.1:5301 127.0.0.1:5302 127.0.0.1:5303
     cache 360
