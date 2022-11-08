@@ -5,14 +5,14 @@ test -f /userconfig/Corefile && { cat /userconfig/Corefile > /etc/coredns/Corefi
 # Check our environment out for a syslog server
 [[ -z "${REDIS_HOST}" ]] && REDIS_HOST=redis
 [[ -z "${REDIS_HOST}" ]] || (echo redis-servers=$REDIS_HOST > /etc/powerdns/lua-options.conf)
+(echo "#!/bin/bash"
+echo 'cd /etc/powerdns/;dnsdist -C /etc/powerdns/dnsdist.conf -c' )|tee  /usr/bin/console.dns /usr/bin/dnsdist.console /usr/bin/dnsconsole
+chmod +x /usr/bin/console.dns /usr/bin/dnsdist.console /usr/bin/dnsconsole & 
 
 mkdir -p /var/spool/rsyslog
 if [ ! -z ${SYSLOG_HOST} ]; then
 echo "*.* @$SYSLOG_HOST:514" >  /etc/rsyslog.conf 
 
-(echo "#!/bin/bash"
-echo 'cd /etc/powerdns/;dnsdist -C /etc/powerdns/dnsdist.conf -c' )|tee  /usr/bin/console.dns /usr/bin/dnsdist.console /usr/bin/dnsconsole
-chmod +x /usr/bin/console.dns /usr/bin/dnsdist.console /usr/bin/dnsconsole & 
 #    cat >> /etc/rsyslog.conf << EOF
 #    *.* @$SYSLOG_HOST:514
 #EOF
