@@ -38,15 +38,15 @@ services:
       - DNSDISTKEY=$DNSDISTKEY
     container_name: dns-robin
     hostname: dns-robin
-##dev
     volumes:
+##dev
       #- ./files-pdns/lua/:/etc/powerdns/lua:ro,consistent
-      - ./files-pdns/lua/lua-options.conf:/etc/powerdns/lua-options.conf:ro,consistent
+#      - ./files-pdns/lua/lua-options.conf:/etc/powerdns/lua-options.conf:ro,consistent
       - ./files-pdns/lua/redisconn.lua:/etc/powerdns/redisconn.lua:ro,consistent
       - ./files-pdns/lua/sinkhole.lua:/etc/powerdns/sinkhole.lua:ro,consistent
       - ./files-pdns/lua/syslog.lua:/etc/powerdns/syslog.lua:ro,consistent
       - ./files-pdns/lua/tester.lua:/etc/powerdns/tester.lua:ro,consistent
-      - /etc/coredns:/etc/coredns
+#      - /etc/coredns:/etc/coredns
       - ./userconfig:/userconfig:rw,consistent
     #ports:
     #  - 51820:51820/udp
