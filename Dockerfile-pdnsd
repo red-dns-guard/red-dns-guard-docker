@@ -23,7 +23,7 @@ RUN /bin/bash -c " uname -m|grep aarch64 && wget -O- https://github.com/coredns/
 # Grab luarocks bits
 #RUN luarocks install luasocket && luarocks install json4lua && luarocks install redis-lua
 # Hackey mc' hackerson startup script
-EXPOSE 53 53/udp 5199 853 5380 5381 8053
+EXPOSE 53 53/udp 534 534/udp  5199 853 5380 5381 8053
 entrypoint /bin/bash /start.sh
 
 
