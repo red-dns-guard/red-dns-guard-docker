@@ -10,6 +10,9 @@ mkdir -p /var/spool/rsyslog
 if [ ! -z ${SYSLOG_HOST} ]; then
 echo "*.* @$SYSLOG_HOST:514" >  /etc/rsyslog.conf 
 
+(echo "#!/bin/bash"
+echo 'cd /etc/powerdns/;dnsdist -C /etc/powerdns/dnsdist.conf -c' )|tee  /usr/bin/console.dns /usr/bin/dnsdist.console /usr/bin/dnsconsole
+chmod +x /usr/bin/console.dns /usr/bin/dnsdist.console /usr/bin/dnsconsole & 
 #    cat >> /etc/rsyslog.conf << EOF
 #    *.* @$SYSLOG_HOST:514
 #EOF
