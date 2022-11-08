@@ -24,7 +24,7 @@ fi
 [[ -z "$DNSDISTKEY" ]] || (sed 's/^setKey.\+//g' -i /etc/powerdns/dnsdist.conf ; echo 'setKey("'"$DNSDISTKEY"'")' >> /etc/powerdns/dnsdist.conf )
 ( 
 test -e /etc/coredns/hosts/alternates/fakenews-gambling/ || mkdir -p /etc/coredns/hosts/alternates/fakenews-gambling/
-find  /etc/coredns/hosts/alternates/fakenews-gambling -name hosts -mtime +2 >/dev/null && (echo "found old coredns blocklist ";ls -1lh /etc/coredns/hosts/alternates/fakenews-gambling/hosts && rm /etc/coredns/hosts/alternates/fakenews-gambling/hosts)
+test -e /etc/coredns/hosts/alternates/fakenews-gambling && test -e /etc/coredns/hosts/alternates/fakenews-gambling/hosts && find /etc/coredns/hosts/alternates/fakenews-gambling -name hosts -mtime +2 && (echo "found old coredns blocklist ";ls -1lh /etc/coredns/hosts/alternates/fakenews-gambling/hosts && rm /etc/coredns/hosts/alternates/fakenews-gambling/hosts)
 test -e /etc/coredns/hosts/alternates/fakenews-gambling/hosts || wget -c "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling/hosts" -O /etc/coredns/hosts/alternates/fakenews-gambling/hosts &>/tmp/log.init.coredns.adblock
 
 test -e /etc/coredns/hosts/alternates/fakenews-gambling/hosts || { echo > /etc/coredns/hosts/alternates/fakenews-gambling/hosts ; } ;
