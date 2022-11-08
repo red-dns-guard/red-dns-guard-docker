@@ -23,9 +23,10 @@ find  /etc/coredns/hosts/alternates/fakenews-gambling -name hosts -mtime +2 >/de
 test -e /etc/coredns/hosts/alternates/fakenews-gambling/hosts || wget -c "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling/hosts" -O /etc/coredns/hosts/alternates/fakenews-gambling/hosts &>/tmp/log.init.coredns.adblock
 
 test -e /etc/coredns/hosts/alternates/fakenews-gambling/hosts || { echo > /etc/coredns/hosts/alternates/fakenews-gambling/hosts ; } ;
-test -e /etc/coredns/Corefile || echo "FAIL::NO COREDNS FILE"
+test -e /etc/coredns ||mkdir /etc/coredns
+test -e /etc/coredns/Corefile || ( echo "FAIL::NO COREDNS FILE ..trying from default";cp /Corefile.default /etc/coredns/Corefile )
 
-/usr/bin/coredns -dns.port 55555 -conf /etc/coredns/Corefile ) &
+test -e /etc/coredns/Corefile  && /usr/bin/coredns -dns.port 55555 -conf /etc/coredns/Corefile ) &
 
 rsyslogd &
  
